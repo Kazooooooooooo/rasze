@@ -1,0 +1,295 @@
+# ============================================================
+#  FantasyRaces - config.yml
+# ============================================================
+# All races, abilities, and conditions are defined here.
+# You can add as many races as you want.
+#
+# STAT MODIFIERS:
+#   max-health     : bonus hearts (added to 20 base). Can be negative.
+#   speed          : movement speed modifier (0.0 = no change, 0.1 = +10%)
+#   damage         : damage multiplier bonus (0.0 = no change, 0.2 = +20% dmg)
+#   knockback-resistance: 0.0 to 1.0
+#   scale          : physical size of the player model.
+#                    1.0 = normal size (default)
+#                    0.5 = half size (tiny)
+#                    2.0 = double size (giant)
+#                    Min: 0.0625 (1/16th), Max: 16.0
+#
+# PASSIVE ABILITIES (list as many as you want):
+#   - type: NIGHT_VISION       # permanent night vision
+#   - type: FIRE_RESISTANCE    # permanent fire resistance
+#   - type: WATER_BREATHING    # permanent water breathing
+#   - type: REGEN              # permanent regeneration (amp: 0 = regen I)
+#       amp: 0
+#   - type: STRENGTH           # permanent strength
+#       amp: 0
+#   - type: HASTE              # permanent haste
+#       amp: 0
+#   - type: SLOW_FALLING       # permanent slow falling
+#   - type: GLOWING            # permanent glowing (visible through walls)
+#   - type: SATURATION         # never gets hungry
+#
+# CONDITIONS:
+#   Conditions grant or remove effects based on world/environment state.
+#   Each condition has a 'trigger' and an 'effect'.
+#
+#   TRIGGERS:
+#     Use 'trigger' for a single condition, or 'triggers' for compound AND logic.
+#     ALL triggers in a 'triggers' list must be true for the effect to apply.
+#
+#     Single trigger example:
+#       trigger: IN_NETHER
+#
+#     Compound AND trigger example (ABOVE_Y AND IS_DAYTIME must BOTH be true):
+#       triggers: [ABOVE_Y, IS_DAYTIME]
+#       value: 60
+#
+#     Available triggers:
+#     BELOW_Y:      true when player Y < value
+#     ABOVE_Y:      true when player Y > value
+#     IS_DAYTIME:   true during the day
+#     IS_NIGHTTIME: true at night
+#     IN_WATER:     true when submerged
+#     ON_FIRE:      true when burning
+#     IN_NETHER:    true when in the nether dimension
+#     IN_END:       true when in the end dimension
+#     IN_OVERWORLD: true when in the overworld
+#     IN_COLD_BIOME: true when in any frozen/snowy biome
+#     IN_BIOME:     true when in listed biomes
+#       biomes: [DESERT, BADLANDS]
+#     WORLD_NAME:   true when in specified world
+#       world: world_nether
+#
+#   EFFECT types (potion effects):
+#     DARKNESS, BLINDNESS, WEAKNESS, SLOWNESS, MINING_FATIGUE, POISON
+#     NIGHT_VISION, FIRE_RESISTANCE, WATER_BREATHING, REGEN, STRENGTH, HASTE
+#     SLOW_FALLING, GLOWING, SATURATION
+#
+#   SPECIAL-EFFECT types (physical world effects):
+#     SET_ON_FIRE   : ignites the player (skips fire-resistant players)
+#     FREEZE        : applies freeze ticks (frostbite visual)
+#     EXTINGUISH    : puts out the player's fire
+#     DAMAGE        : deals damage each tick. Set amount with 'damage: 1.0'
+#                     damage is in half-hearts (1.0 = half a heart per tick)
+#
+#   NOTE: A condition can have a 'trigger' OR 'triggers', an optional 'effect',
+#         an optional 'special-effect', and an optional 'damage' amount.
+#
+# LUCKPERMS:
+#   luckperms-group: (optional) name of a LuckPerms group.
+#     When a player selects this race, they are ADDED to this group.
+#     When they change race, they are REMOVED from the old race group.
+#
+# SETTINGS:
+#   allow-reselect: can players change their race after first pick?
+#   reselect-cooldown: seconds between race changes (0 = no cooldown)
+# ============================================================
+
+settings:
+  allow-reselect: true
+  reselect-cooldown: 86400  # 24 hours in seconds (0 to disable)
+  default-race: human        # race assigned on first join (use 'none' to prompt)
+  broadcast-on-select: true  # announce race choice to server?
+  luckperms-sync: true       # enable LuckPerms group syncing?
+
+messages:
+  prefix: "&8[&6Races&8] &r"
+  selected: "&aYou are now a &e{race}&a!"
+  already-selected: "&cYou are already a &e{race}&c!"
+  cooldown: "&cYou must wait &e{time}&c before changing your race again."
+  unknown-race: "&cUnknown race: &e{race}&c. Use &f/race list&c to see available races."
+  no-permission: "&cYou don't have permission to do that."
+  race-info-header: "&6--- &e{race} &6---"
+  race-info-lp-group: "&7LuckPerms Group: &f{group}"
+  reload-success: "&aFantasyRaces reloaded successfully."
+  set-success: "&aSet &e{player}&a's race to &e{race}&a."
+  reset-success: "&aReset &e{player}&a's race."
+  broadcast-select: "&e{player} &ahas chosen the &e{race} &arace!"
+
+# ============================================================
+#  RACE DEFINITIONS
+# ============================================================
+
+races:
+
+  human:
+    display-name: "&fHuman"
+    description: "Adaptable and resilient. No special traits, but no weaknesses."
+    icon: PLAYER_HEAD
+    luckperms-group: "race_human"
+    stats:
+      max-health: 0
+      speed: 0.0
+      damage: 0.0
+      knockback-resistance: 0.0
+      scale: 1.0
+    passives: []
+    conditions:
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE   # humans burn in the nether
+
+  elf:
+    display-name: "&aElf"
+    description: "Graceful forest dwellers with keen sight and swift movement."
+    icon: ARROW
+    luckperms-group: "race_elf"
+    stats:
+      max-health: -2       # 9 hearts — slightly fragile
+      speed: 0.05          # 5% faster
+      damage: 0.0
+      knockback-resistance: 0.0
+      scale: 0.9           # slightly slender/shorter than humans
+    passives:
+      - type: NIGHT_VISION
+    conditions:
+      - trigger: IS_NIGHTTIME
+        effect: HASTE
+        amp: 0             # Haste I at night
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE   # elves burn in the nether
+
+  dwarf:
+    display-name: "&6Dwarf"
+    description: "Stout and mighty underground miners with iron resilience."
+    icon: IRON_PICKAXE
+    luckperms-group: "race_dwarf"
+    stats:
+      max-health: 4        # 12 hearts
+      speed: -0.03         # slightly slower
+      damage: 0.1          # +10% melee damage
+      knockback-resistance: 0.2
+      scale: 0.7           # short and stout
+    passives:
+      - type: HASTE
+        amp: 0
+    conditions:
+      - trigger: BELOW_Y
+        value: 30
+        effect: STRENGTH
+        amp: 0             # Strength I underground
+      - trigger: ABOVE_Y
+        value: 100
+        effect: WEAKNESS
+        amp: 0             # Weakness above ground (sunlight sensitivity)
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE   # dwarves burn in the nether
+
+  orc:
+    display-name: "&2Orc"
+    description: "Brutal warriors with immense strength but poor defense against magic."
+    icon: IRON_SWORD
+    luckperms-group: "race_orc"
+    stats:
+      max-health: 6        # 13 hearts
+      speed: 0.0
+      damage: 0.25         # +25% damage
+      knockback-resistance: 0.1
+      scale: 1.3           # big and imposing
+    passives:
+      - type: REGEN
+        amp: 0
+    conditions:
+      - trigger: ON_FIRE
+        effect: STRENGTH
+        amp: 1             # Strength II when burning (berserk)
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE   # orcs burn in the nether
+
+  undead:
+    display-name: "&5Undead"
+    description: "Risen from death. Immune to fire but cursed by sunlight."
+    icon: BONE
+    luckperms-group: "race_undead"
+    stats:
+      max-health: 0
+      speed: 0.0
+      damage: 0.0
+      knockback-resistance: 0.0
+      scale: 1.0           # same as human
+    passives:
+      - type: FIRE_RESISTANCE
+      - type: WATER_BREATHING
+    conditions:
+      - trigger: IS_DAYTIME
+        effect: WEAKNESS
+        amp: 0
+      - trigger: IS_DAYTIME
+        effect: SLOWNESS
+        amp: 0
+      - trigger: IS_NIGHTTIME
+        effect: STRENGTH
+        amp: 0
+      - trigger: IS_NIGHTTIME
+        effect: NIGHT_VISION
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE   # undead burn in the nether
+
+  deep_dweller:
+    display-name: "&1Deep Dweller"
+    description: "Creatures of the void. Thrive underground, suffer in light."
+    icon: SCULK
+    luckperms-group: "race_deepdweller"
+    stats:
+      max-health: 2
+      speed: 0.0
+      damage: 0.15
+      knockback-resistance: 0.0
+      scale: 0.8           # slightly smaller, adapted to tight cave spaces
+    passives:
+      - type: NIGHT_VISION
+    conditions:
+      - trigger: BELOW_Y
+        value: 0           # Y < 0 = deep dark level
+        effect: STRENGTH
+        amp: 1
+      - trigger: BELOW_Y
+        value: 0
+        effect: HASTE
+        amp: 1
+      # Compound condition: ABOVE_Y AND IS_DAYTIME — blind only in daylight above ground
+      - triggers: [ABOVE_Y, IS_DAYTIME]
+        value: 60
+        effect: BLINDNESS
+        amp: 0
+      # Compound condition: ABOVE_Y AND IS_DAYTIME — also darkness effect
+      - triggers: [ABOVE_Y, IS_DAYTIME]
+        value: 60
+        effect: DARKNESS
+        amp: 0
+      # Slowness above ground regardless of time
+      - trigger: ABOVE_Y
+        value: 60
+        effect: SLOWNESS
+        amp: 0
+      - trigger: IN_NETHER
+        special-effect: SET_ON_FIRE
+
+  tiefling:
+    display-name: "&4Tiefling"
+    description: "Touched by infernal flame. Born of the nether, but cursed by the cold."
+    icon: BLAZE_POWDER
+    luckperms-group: "race_tiefling"
+    stats:
+      max-health: 2        # 11 hearts — slightly tougher
+      speed: 0.0
+      damage: 0.1          # +10% damage
+      knockback-resistance: 0.0
+      scale: 1.05          # slightly taller than humans
+    passives:
+      - type: FIRE_RESISTANCE  # immune to fire damage by nature
+    conditions:
+      # Tieflings THRIVE in the nether — they do NOT burn
+      - trigger: IN_NETHER
+        effect: STRENGTH
+        amp: 0             # Strength I in the nether
+      - trigger: IN_NETHER
+        effect: HASTE
+        amp: 0             # Haste I in the nether
+      # Tieflings SUFFER in cold biomes — they freeze AND take frostbite damage
+      - trigger: IN_COLD_BIOME
+        special-effect: FREEZE
+        effect: SLOWNESS
+        amp: 0             # slowed by the cold
+      - trigger: IN_COLD_BIOME
+        special-effect: DAMAGE
+        damage: 1.0        # 1.0 = half a heart every 2 seconds (configurable)

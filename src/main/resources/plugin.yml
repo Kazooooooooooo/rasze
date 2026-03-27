@@ -1,0 +1,28 @@
+name: FantasyRaces
+version: 1.0.0
+main: com.fantasyraces.FantasyRaces
+api-version: '1.21'
+description: Fully configurable fantasy races plugin with LuckPerms integration
+authors: []
+softdepend:
+  - LuckPerms
+
+commands:
+  race:
+    description: Main race command
+    usage: /race <select|info|reload|set|reset>
+    aliases: [races]
+
+permissions:
+  fantasyraces.select:
+    description: Allows a player to choose their own race
+    default: true
+  fantasyraces.info:
+    description: Allows a player to view race info
+    default: true
+  fantasyraces.admin:
+    description: Admin access (set/reset/reload)
+    default: op
+  fantasyraces.reload:
+    description: Reload the plugin config
+    default: op
