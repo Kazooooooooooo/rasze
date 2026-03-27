@@ -1,0 +1,55 @@
+name: Build FantasyRaces
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Show project structure
+        run: |
+          echo "=== Root files ==="
+          ls -la
+          echo "=== Source structure ==="
+          find src -type f | sort
+          echo "=== pom.xml ==="
+          cat pom.xml
+
+      - name: Build with Maven
+        run: mvn clean package -B -e
+
+      - name: Show JAR contents
+        run: |
+          echo "=== JAR contents ==="
+          jar tf target/FantasyRaces-1.0.0.jar
+
+      - name: Verify plugin.yml is in JAR
+        run: |
+          if jar tf target/FantasyRaces-1.0.0.jar | grep -q "plugin.yml"; then
+            echo "✅ plugin.yml found in JAR"
+          else
+            echo "❌ plugin.yml MISSING from JAR"
+            exit 1
+          fi
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: FantasyRaces
+          path: target/FantasyRaces-1.0.0.jar
+          if-no-files-found: error
